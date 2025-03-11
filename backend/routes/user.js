@@ -29,6 +29,7 @@ router.post("/signup", async (req, res, next) => {
             }
             // req.flash("success", "User is Registered Successfully");
             // Send a success response
+            // console.log(`${registeredUser.username} is registered and logged in successfully`);
             return res.json({ success: true, message: "User registered successfully", user: registeredUser });
         });
     }
@@ -52,6 +53,7 @@ router.post('/login',
                 if (err) {
                     return res.status(500).json({ success: false, message: 'Could not log in user' });
                 }
+                console.log(`${user.username} is logged in successfully`);
                 res.json({ success: true, message: 'Logged in successfully', user });
             });
         })(req, res, next)
@@ -65,6 +67,31 @@ router.get('/logout', (req, res) => {
         res.clearCookie('connect.sid'); // Clear session cookie (if applicable)
         return res.json({ success: true, message: 'Logged out successfully' });
     });
+});
+
+// Check if the details are filled
+router.get('/checkDetails', async (req, res) => {
+    if (req.isAuthenticated()) {
+        let id = req.user._id;
+        // console.log(id);
+        let details = await Detail.findOne({ userId: id });
+        // console.log(details);
+        return res.json({ success: true, message: "User is authenticated", id , details});
+    }
+    res.json({
+        "success": false,
+        "id" : null,
+        "message": "User is not authenticated",
+        "details": null
+    });
+});
+
+// Check if the user is authenticated
+router.get("/isAuthenticated", (req, res) => {
+    if (req.isAuthenticated()) {
+        return res.json({ loggedIn: true, user: req.user }); // send user data if logged in
+    }
+    return res.json({ loggedIn: false }); // user not logged in
 });
 
 module.exports = router;
