@@ -1,0 +1,28 @@
+.edit-expense-form {
+    border: 2px solid #007bff;
+    border-radius: 10px;
+    background-color: #f8f9fa;
+  }
+  
+  .edit-expense-form .form-label {
+    font-weight: bold;
+  }
+  
+  .edit-expense-form input,
+  .edit-expense-form select {
+    border-radius: 5px;
+    padding: 10px;
+  }
+  
+  .edit-expense-form button {
+    transition: background-color 0.3s ease;
+  }
+  
+  .edit-expense-form button:hover {
+    background-color: #218838;
+  }
+  
+  .buttonsupdate{
+    display: flex;
+    justify-content: space-around;
+  }
