@@ -1,0 +1,37 @@
+.settings-page .card {
+    border-radius: 8px;
+    border: none;
+  }
+  
+  .settings-page h1 {
+    font-weight: bold;
+  }
+  
+  .settings-page .form-label {
+    font-size: 1rem;
+  }
+  
+  .settings-page .form-control {
+    border-radius: 5px;
+  }
+  
+  .settings-page button {
+    width: 48%;
+    font-weight: bold;
+    padding: 10px;
+  }
+  
+  .settings-page .btn-success {
+    background-color: #28a745;
+    border-color: #28a745;
+  }
+  
+  .settings-page .btn-danger {
+    background-color: #dc3545;
+    border-color: #dc3545;
+  }
+  
+  .settings-page .btn:hover {
+    opacity: 0.8;
+  }
+  
