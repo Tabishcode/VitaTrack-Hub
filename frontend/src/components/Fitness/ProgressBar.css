@@ -1,0 +1,38 @@
+.progress-container {
+    width: 100%;
+    background-color: #e0e0e0;
+    border-radius: 5px;
+    position: relative;
+    height: 30px; /* Height of the progress bar */
+    overflow: hidden;
+    margin: 10px 0; /* Margin around the progress bar */
+}
+
+.progress-bar {
+    height: 100%;
+    transition: width 0.5s; /* Smooth transition */
+}
+
+.progress-text {
+    position: absolute;
+    right: 10px; /* Position the value on the right */
+    top: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center; /* Center align text vertically */
+    font-weight: bold;
+    color: #000; /* Color of the value text */
+}
+
+.row {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: row;
+    align-items: center;
+    margin-right: 7%;
+}
+
+.row p {
+    width: 15%;
+    padding-left: 10px;
+}

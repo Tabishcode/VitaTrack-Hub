@@ -1,0 +1,22 @@
+
+.navbar {
+  background-color: #282c34;
+  color: white;
+  padding: 1rem;
+  text-align: center;
+  font-size: 1.5rem;
+}
+
+.header-list {
+  display: flex;
+  justify-content: center;
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: #282c34;
+
+  li {
+    margin: auto 10px;
+  }
+}
