@@ -1,5 +1,3 @@
-
-
 import React, { useState } from "react";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import { useNavigate } from "react-router-dom";
@@ -7,9 +5,10 @@ import { useNavigate } from "react-router-dom";
 const Login = ({ onLogin }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
-    username: "", // Changed from email to username
+    email: "",
     password: "",
-    remember: false,
+    // captcha: false,
+    remember: false
   });
   const [errors, setErrors] = useState({});
   const navigate = useNavigate();
@@ -30,9 +29,14 @@ const Login = ({ onLogin }) => {
   const validateForm = () => {
     const newErrors = {};
 
-    // Username validation
-    if (!formData.username) {
-      newErrors.username = "Username is required.";
+    // Email validation
+    // if (!formData.email) {
+    //   newErrors.email = "Email is required.";
+    // } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+    //   newErrors.email = "Please enter a valid email.";
+    // }
+    if (!formData.email) {
+      newErrors.email = "Username is Required.";
     }
 
     // Password validation
@@ -42,55 +46,58 @@ const Login = ({ onLogin }) => {
       newErrors.password = "Password must be at least 5 characters long.";
     }
 
+    // Captcha validation
+    // if (!formData.captcha) {
+    //   newErrors.captcha = "Please confirm you are not a robot.";
+    // }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0; // Form is valid if no errors
   };
 
   const handleLogin = async (e) => {
     e.preventDefault();
-
     if (validateForm()) {
       try {
-        console.log("Form Data being sent:", formData);
-
-        // Send login request
-        const loginResponse = await fetch('https://vitalhub-mvp-production.up.railway.app/api/user/login', {
+        // Make the login API call
+        const loginResponse = await fetch('/api/user/login', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            username: formData.username, // Now sending username
+            username: formData.email,
             password: formData.password,
           }),
         });
-
-        console.log("Login Response Status:", loginResponse.status);
+  
         const loginData = await loginResponse.json();
-        console.log("Login Response Data (JSON):", loginData);
-
-        if (loginResponse.ok && loginData.success) {
-          console.log('Login successful');
+  
+        if (loginData.success) {
+          // Login successful
           onLogin();
-
-          const detailsResponse = await fetch("https://vitalhub-mvp-production.up.railway.app/api/user/checkDetails");
+  
+          // Check user details
+          const detailsResponse = await fetch("/api/user/checkDetails");
           const detailsData = await detailsResponse.json();
-
-          if (detailsData.success && detailsData.details) {
-            navigate("/FoodDashboard");
+  
+          if (detailsData.details) {
+            navigate("/FoodDashboard"); // Redirect to FoodDashboard
           } else {
-            navigate("/welcome");
+            navigate("/welcome"); // Redirect to welcome
           }
         } else {
-          console.error('Login failed:', loginData);
-          setErrors({ ...errors, login: loginData.message || "Invalid credentials" });
+          // Login failed
+          console.error('Login failed');
+          setErrors({ ...errors, login: "There was an error logging you in! Please Try Again" });
         }
       } catch (error) {
-        console.error('Error occurred during login:', error);
+        console.error('Error:', error);
         setErrors({ ...errors, login: "An unexpected error occurred. Please try again later." });
       }
     }
   };
+  
 
   return (
     <div className="flex items-center justify-center bg-gray-100">
@@ -99,23 +106,30 @@ const Login = ({ onLogin }) => {
         <p className="text-center">Username: admin Pass: admin</p>
         <form onSubmit={handleLogin}>
           <div className="mb-4">
-            <label htmlFor="username" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium text-gray-700"
+            >
               Username
             </label>
             <input
               type="text"
-              id="username" // Changed ID to username
-              value={formData.username}
+              id="email"
+              value={formData.email}
               onChange={handleChange}
-              className={`mt-1 block w-full border ${errors.username ? "border-red-500" : "border-gray-300"} rounded-md shadow-sm focus:ring focus:ring-blue-500 focus:border-blue-500 p-2`}
+              className={`mt-1 block w-full border ${errors.email ? "border-red-500" : "border-gray-300"
+                } rounded-md shadow-sm focus:ring focus:ring-blue-500 focus:border-blue-500 p-2`}
               required
             />
-            {errors.username && (
-              <p className="text-red-500 text-sm mt-1">{errors.username}</p>
+            {errors.email && (
+              <p className="text-red-500 text-sm mt-1">{errors.email}</p>
             )}
           </div>
           <div className="mb-4 relative">
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium text-gray-700"
+            >
               Password
             </label>
             <input
@@ -123,7 +137,8 @@ const Login = ({ onLogin }) => {
               id="password"
               value={formData.password}
               onChange={handleChange}
-              className={`mt-1 block w-full border ${errors.password ? "border-red-500" : "border-gray-300"} rounded-md shadow-sm focus:ring focus:ring-blue-500 focus:border-blue-500 p-2`}
+              className={`mt-1 block w-full border ${errors.password ? "border-red-500" : "border-gray-300"
+                } rounded-md shadow-sm focus:ring focus:ring-blue-500 focus:border-blue-500 p-2`}
               required
             />
             <button
@@ -132,9 +147,15 @@ const Login = ({ onLogin }) => {
               className="absolute inset-y-0 right-0 top-6 flex items-center pr-3"
             >
               {showPassword ? (
-                <AiOutlineEyeInvisible className="h-5 w-5 text-gray-500" aria-hidden="true" />
+                <AiOutlineEyeInvisible
+                  className="h-5 w-5 text-gray-500"
+                  aria-hidden="true"
+                />
               ) : (
-                <AiOutlineEye className="h-5 w-5 text-gray-500" aria-hidden="true" />
+                <AiOutlineEye
+                  className="h-5 w-5 text-gray-500"
+                  aria-hidden="true"
+                />
               )}
             </button>
             {errors.password && (
@@ -148,8 +169,7 @@ const Login = ({ onLogin }) => {
                 id="remember"
                 className="mr-2 shadow-xl"
                 onChange={handleChange}
-                checked={formData.remember}
-              />
+                checked={formData.captcha} />
               <label htmlFor="remember" className="text-sm text-gray-600">
                 Remember Me
               </label>
@@ -161,6 +181,21 @@ const Login = ({ onLogin }) => {
               Forgot Password?
             </button>
           </div>
+          {/* <div className="flex items-center mb-4">
+            <input
+              type="checkbox"
+              id="captcha"
+              checked={formData.captchaChecked}
+              onChange={handleChange}
+              className="mr-2 shadow-2xl"
+            />
+            <label htmlFor="captcha" className="text-sm text-gray-600">
+              I am not a robot
+            </label>
+          </div> */}
+          {errors.captchaChecked && (
+            <p className="text-red-500 text-sm mt-1">{errors.captchaChecked}</p>
+          )}
           {errors.login && (
             <p className="text-red-500 text-base font-bold text-center mb-3 mt-1">{errors.login}</p>
           )}
@@ -191,7 +226,10 @@ const Login = ({ onLogin }) => {
         </button>
         <p className="mt-4 text-center text-sm text-gray-600">
           Don't have an account?
-          <a href="/signup" className="text-blue-500 hover:underline"> Sign Up</a>
+          <a href="/signup" className="text-blue-500 hover:underline">
+            {" "}
+            Sign Up
+          </a>
         </p>
       </div>
     </div>

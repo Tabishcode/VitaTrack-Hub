@@ -3,13 +3,13 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-d
 import NavbarMain from "./components/NavbarMain.jsx";
 import Home from "./pages/Home.jsx";
 import Login from "./components/Login.jsx";
-// import FoodDashboard from "./pages/FoodDashboard.jsx";
-// import FitnessDashboard from "./pages/FitnessDashboard.jsx";
-import PasswordDashboard from "./pages/PasswordDashboard.jsx";
-// import Welcome from "./components/WelcomeFoodFitness.jsx";
-// import FoodForm from "./components/CaloriesRequirmentForm.jsx";
+import FoodDashboard from "./pages/FoodDashboard.jsx";
+import FitnessDashboard from "./pages/FitnessDashboard.jsx";
+import Welcome from "./components/WelcomeFoodFitness.jsx";
+import FoodForm from "./components/CaloriesRequirmentForm.jsx";
+import Reports from "./pages/Reports.jsx"
+import Blogs from "./pages/Blogs.jsx"
 import Footer from "./components/Footer.jsx";
-// import Expenses from "./pages/Expenses.jsx";
 import NotFound from "./components/NotFound.jsx";
 import SignUp from "./components/signup.jsx";
 import useAuth from "./hooks/useAuth.jsx";
@@ -24,7 +24,7 @@ const App = () => {
     useEffect(() => {
         const checkFormStatus = async () => {
             try {
-                const response = await fetch("https://vitalhub-mvp-production.up.railway.app/api/user/checkDetails");
+                const response = await fetch("/api/user/checkDetails");
                 const data = await response.json();
                 setIsFormFilled(data.details ? true : false);
             } catch (error) {
@@ -101,8 +101,9 @@ const App = () => {
                 />
                 <Route path="/FoodDashBoard" element={isLoggedIn ? <FoodDashboard /> : <NotFound />} />
                 <Route path="/fitness" element={isLoggedIn ? <FitnessDashboard /> : <NotFound />} />
-                <Route path="/ExpensesDashboard" element={isLoggedIn ? <Expenses /> : <NotFound />} />
-                <Route path="/passwords" element={isLoggedIn ? <PasswordDashboard /> : <NotFound />} />
+                <Route path="/reports" element={isLoggedIn ? <Reports /> : <NotFound />} />
+                <Route path="/blogs" element={isLoggedIn ? <Blogs /> : <NotFound /> } />
+
             </Routes>
             <Footer />
         </Router>

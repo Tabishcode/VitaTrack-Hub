@@ -59,8 +59,11 @@ router.get('/details', async (req, res) => {
             }
         })
         .exec();
-    let data = details[0].toObject();
-    data.bmi = details[0].weight / ((details[0].height / 100) ** 2);      // We are storing in cm's
+    let data;
+    if (details.length) {
+        data = details[0].toObject();
+        data.bmi = details[0].weight / ((details[0].height / 100) ** 2);      // We are storing in cm's
+    }    
     res.json(data);
 });
 

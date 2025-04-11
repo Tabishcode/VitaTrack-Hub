@@ -7,7 +7,7 @@ function useAuth() {
 
     const checkAuthStatus = async () => {
         try {
-            const response = await axios.get('https://vitalhub-mvp-production.up.railway.app/api/user/isAuthenticated');
+            const response = await axios.get('/api/user/isAuthenticated');
             if (response.data.loggedIn) {
                 setIsLoggedIn(true);
                 setUser(response.data.user);

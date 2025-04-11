@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import ExpenseFormModal from "../components/Expenses/ExpensesForm";
+// import ExpenseFormModal from "../components/Expenses/ExpensesForm";
 import FitnessNav from '../components/Fitness/FitnessNav'
 import FitnessHome from '../components/Fitness/FitnessHome'
 import FitnessDiary from '../components/Fitness/FitnessDiary'
@@ -55,11 +55,11 @@ const ExpensesDashboard = () => {
                 {renderComponent()}{" "}
                 {/* Dynamically render the component below the navbar */}
             </div>
-            <ExpenseFormModal
+            {/* <ExpenseFormModal
                 isVisible={isFormVisible}
                 onClose={handleCloseForm}
                 onSubmit={handleFormSubmit}
-            />
+            /> */}
         </div>
     );
 };
