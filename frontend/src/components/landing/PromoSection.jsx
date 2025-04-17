@@ -11,9 +11,7 @@ const PromoSection = () => {
         <h2 className="text-lg mb-2">Streamline Your Journey:</h2>
         <p className="mb-4">
           Manage your <span className="font-semibold">meals</span>, track{" "}
-          <span className="font-semibold">fitness</span>, monitor{" "}
-          <span className="font-semibold">expenses</span>, and secure{" "}
-          <span className="font-semibold">passwords</span>—all in one place.
+          <span className="font-semibold">fitness</span>—all in one place.
         </p>
         <button className="bg-teal-500 text-white py-2 px-6 rounded-full font-semibold hover:bg-teal-600 mb-4">
           Join Today
