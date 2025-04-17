@@ -18,9 +18,10 @@ import "./index.css";
 import PuffLoader from "react-spinners/PuffLoader";
 
 const App = () => {
-    const { isLoggedIn, user, revalidate } = useAuth();
+    const { isLoggedIn: realLogedIn, user, revalidate } = useAuth();
     const [isFormFilled, setIsFormFilled] = useState(false); // Manage loading state for form status
-
+    const isLoggedIn = true 
+    const user 
     useEffect(() => {
         const checkFormStatus = async () => {
             try {

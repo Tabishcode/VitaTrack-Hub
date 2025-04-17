@@ -94,4 +94,57 @@ router.get("/isAuthenticated", (req, res) => {
     return res.json({ loggedIn: false }); // user not logged in
 });
 
+
+// Update user profile
+router.post('/updateByFormData', async (req, res) => {
+    if (!req.isAuthenticated()) {
+        return res.status(401).json({ success: false, message: "User not authenticated" });
+    }
+
+    const { dob, height, weight, gender, goal, calories } = req.body;
+
+    try {
+        const updatedUser = await User.findByIdAndUpdate(
+            req.user._id,
+            { dob, height, weight, gender, goal, calories },
+            { new: true }
+        );
+
+        return res.json({
+            success: true,
+            message: "User details updated successfully",
+            user: updatedUser
+        });
+    } catch (err) {
+        console.error("Error updating user details:", err.message);
+        return res.status(500).json({ success: false, message: "Failed to update details" });
+    }
+});
+
+router.get("/profile", async (req, res) => {
+  if (!req.isAuthenticated()) {
+    return res
+      .status(401)
+      .json({ success: false, message: "User not authenticated" });
+  }
+
+  try {
+    const user = await User.findById(req.user._id).select("-hash -salt"); // hide sensitive fields if any
+
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
+    }
+
+    return res.json({ success: true, user });
+  } catch (err) {
+    console.error("Error fetching user profile:", err.message);
+    return res
+      .status(500)
+      .json({ success: false, message: "Error fetching user details" });
+  }
+});
+
+
 module.exports = router;
