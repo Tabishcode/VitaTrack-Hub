@@ -4,12 +4,13 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const mongoose = require("mongoose");
 require('dotenv').config();
-
 const PORT = process.env.PORT || 3000;
 const MONGO_URL = process.env.MONGO_URL;
 
 let User = require('./models/user');
 let userRouter = require('./routes/user');
+let timetableRoutes = require("./routes/foodTimetable");
+
 
 let passport = require('passport');
 const LocalStrategy = require("passport-local");
@@ -50,6 +51,7 @@ async function main() {
 }
 
 app.use('/api/user', userRouter);
+app.use("/api/timetable", timetableRoutes);
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
