@@ -10,6 +10,7 @@ const MONGO_URL = process.env.MONGO_URL;
 let User = require('./models/user');
 let userRouter = require('./routes/user');
 let timetableRoutes = require("./routes/foodTimetable");
+let attendanceRoutes = require("./routes/foodAttendance");
 
 
 let passport = require('passport');
@@ -52,6 +53,7 @@ async function main() {
 
 app.use('/api/user', userRouter);
 app.use("/api/timetable", timetableRoutes);
+app.use("/api/attendance", attendanceRoutes);
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
