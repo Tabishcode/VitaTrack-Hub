@@ -90,15 +90,15 @@ const NavbarMain = ({ isLoggedIn, user, revalidate }) => {
           </button>
           <button
             className="hover:text-blue-300"
-            onClick={() => navigate("/expensesDashboard")} // Navigate to /expensesDashboard on click
+            onClick={() => navigate("/reports")} // Navigate to /expensesDashboard on click
           >
-            Money
+            Reports
           </button>
           <button
             className="hover:text-blue-300"
-            onClick={() => navigate("/passwords")} // Replace with appropriate route if needed
+            onClick={() => navigate("/blogs")} // Replace with appropriate route if needed
           >
-            Passwords
+            Blogs
           </button>
         </div>
 

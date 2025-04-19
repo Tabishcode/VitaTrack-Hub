@@ -1,0 +1,142 @@
+
+.add {
+    height: 150px;
+    background-color: black;
+    color: white;
+}
+
+.calendar {
+    display: flex;
+    align-items: center;
+    height: 50px;
+}
+
+.prev {
+    width: 30px;
+    /* height: 100%; */
+    background-color: #588157;
+    display: block;
+    border-radius: 5px;
+}
+
+.next {
+    display: block;
+    width: 30px;
+    /* height: 100%; */
+    background-color: #588157;
+    border-radius: 5px;
+}
+
+.date_controls {
+    display: flex;
+    /* width: 500px; */
+    height: 35px;
+    align-items: center;
+    padding: 10px;
+}
+
+.date {
+    width: 300px;
+    text-align: center;
+}
+
+.addv {
+    width: 200px;
+    background-color: transparent;
+    margin-left: 20px;
+}
+.mid {
+    display: flex;
+    width: 100%;
+    margin-bottom: 10px;
+}
+.cardivasular {
+    flex: 1;
+    /* width: 100%; */
+}
+/* Display Exercise */
+
+.header {
+    display: flex;
+    justify-content: space-between;
+}
+
+.title {
+    color: rgb(57, 57, 235);
+    font-size: larger;
+    font-weight: bold;
+}
+
+.btns {
+    display: flex;
+}
+
+.btn {
+    color: white;
+    background-color: #3a5a40;
+    margin: 5px;
+    /* padding: 2px 5px; */
+    width: 150px;
+    border-radius: 2px;
+    text-align: center;
+}
+
+.formNote {
+    display: flex;
+    flex-direction: column;
+    margin: 20px 2px 5px 2px;
+
+    .top {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+
+        h3 {
+            font-size: larger;
+            font-weight: bold;
+            color: blue;
+        }
+    }
+}
+
+.noteText {
+    border: 1px solid black;
+    border-radius: 5px;
+}
+
+.center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Advertisement */
+.horAdd {
+    /* width: 90%;
+    margin: auto auto;
+    text-align: center; */
+    display: flex;
+    justify-content: center;
+    height: 25vh;
+}
+
+.space {
+    border-top: 2px solid #1a4124;
+    margin: 10px 0px;
+    margin-bottom: 20px;
+}
+
+.bold {
+    font-weight: bold;
+    padding-right: 20px;
+}
+
+.boldBack {
+    background-color: #868b86;
+    color: black;
+    font-weight: bold;
+    padding: 5px 2px;
+    border-radius: 2px;
+    border: 1px solid white;
+    /* margin: 2px; */
+}

@@ -1,0 +1,16 @@
+.chart {
+  border: 1px solid #ddd;
+  padding: 1rem;
+  background-color: #fff;
+  width: 100%;
+  text-align: center;
+}
+
+.chart-placeholder {
+  height: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px dashed #ccc;
+  background-color: #fafafa;
+}
