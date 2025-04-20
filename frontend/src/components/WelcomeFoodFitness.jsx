@@ -1,9 +1,17 @@
-import React from "react";
 import { useNavigate } from "react-router-dom";
+import useCheckUserFormStatus from "../hooks/useCheckUserFormStatus";
 
 const WelcomeFoodFitness = () => {
   const navigate = useNavigate(); // Initialize the useNavigate hook
-
+  const loading = useCheckUserFormStatus();
+  // 🔒 Block UI while checking auth
+  if (loading) {
+    return (
+      <div className="w-full h-screen flex justify-center items-center">
+        <p className="text-lg text-gray-600">Checking your profile...</p>
+      </div>
+    );
+  }
   const images = [
     {
       src: "https://www.myfitnesspal.com/_next/image?url=%2F_next%2Fstatic%2Fmedia%2Fvalue-prop-1.51bb606c.png&w=1200&q=75", // Replace with your image URL
@@ -21,15 +29,14 @@ const WelcomeFoodFitness = () => {
 
   const handleContinue = async () => {
     try {
-      let response = await fetch("/api/user/checkDetails"); 
+      let response = await fetch("/api/user/isAuthen");
       let data = await response.json();
       if (data.success) {
         navigate("/FoodDashboard"); // Redirect to /FoodDashboard when the button is clicked
       } else {
         navigate("/FoodForm"); // Redirect to /FoodForm when the button is clicked
       }
-    }
-    catch (error) {
+    } catch (error) {
       console.error("Error:", error);
     }
     navigate("/FoodForm"); // Redirect to /FoodForm when the button is clicked

@@ -1,19 +1,56 @@
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import dayjs from "dayjs";
 
-const Congratulation = ({ data }) => {
+const Congratulation = () => {
   const navigate = useNavigate();
+  const [userData, setUserData] = useState(null);
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const res = await axios.get("/api/user/profile");
+        if (res.data.success) {
+          const user = res.data.user;
+
+          const dob = dayjs(user.dob);
+          const today = dayjs();
+          const age = today.diff(dob, "year");
+
+          // Add missing values for compatibility
+          const data = {
+            ...user,
+            age,
+            weightUnit: "kg",
+            heightUnit: "ft", // or cm if you want to convert
+            activityLevel: "moderatelyActive", // You can replace this based on real data if available
+          };
+
+          setUserData(data);
+        }
+      } catch (error) {
+        console.error("Failed to fetch user profile:", error);
+      }
+    };
+
+    fetchProfile();
+  }, []);
 
   const calculateResults = () => {
+    if (!userData) return null;
+
     let { weight, height, age, activityLevel, goal, weightUnit, heightUnit } =
-      data;
+      userData;
 
     // Convert height to cm if needed
     if (heightUnit === "in") height *= 2.54;
+    if (heightUnit === "ft") height *= 30.48;
 
     // Convert weight to kg if needed
     if (weightUnit === "lbs") weight *= 0.453592;
 
-    // Calculate BMR (Harris-Benedict Equation for Men)
+    // BMR calculation
     let bmr = 10 * weight + 6.25 * height - 5 * age + 5;
 
     const activityMultipliers = {
@@ -26,8 +63,8 @@ const Congratulation = ({ data }) => {
 
     bmr *= activityMultipliers[activityLevel] || 1;
 
-    if (goal === "weightLoss") bmr *= 0.9;
-    else if (goal === "weightGain") bmr *= 1.1;
+    if (goal === "lose weight") bmr *= 0.9;
+    else if (goal === "gain weight") bmr *= 1.1;
 
     const fats = (0.3 * bmr) / 9;
     const carbs = (0.5 * bmr) / 4;
@@ -44,6 +81,8 @@ const Congratulation = ({ data }) => {
   };
 
   const results = calculateResults();
+
+  if (!userData || !results) return <div>Loading...</div>;
 
   return (
     <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-lg z-50 overflow-hidden">
@@ -64,19 +103,19 @@ const Congratulation = ({ data }) => {
             </h2>
             <ul className="space-y-2 text-sm text-gray-700">
               <li>
-                <strong>Activity Level:</strong> {data.activityLevel}
+                <strong>Activity Level:</strong> {userData.activityLevel}
               </li>
               <li>
-                <strong>Age:</strong> {data.age}
+                <strong>Age:</strong> {userData.age}
               </li>
               <li>
-                <strong>Weight:</strong> {data.weight} {data.weightUnit}
+                <strong>Weight:</strong> {userData.weight} {userData.weightUnit}
               </li>
               <li>
-                <strong>Height:</strong> {data.height} {data.heightUnit}
+                <strong>Height:</strong> {userData.height} {userData.heightUnit}
               </li>
               <li>
-                <strong>Goal:</strong> {data.goal}
+                <strong>Goal:</strong> {userData.goal}
               </li>
             </ul>
           </div>
@@ -89,15 +128,6 @@ const Congratulation = ({ data }) => {
             <ul className="space-y-2 text-sm text-gray-700">
               <li>
                 <strong>Daily Calories:</strong> {results.bmr} kcal
-              </li>
-              <li>
-                <strong>Fats:</strong> {results.fats} g
-              </li>
-              <li>
-                <strong>Carbs:</strong> {results.carbs} g
-              </li>
-              <li>
-                <strong>Protein:</strong> {results.protein} g
               </li>
               <li>
                 <strong>Water Intake:</strong> {results.waterIntake} mL

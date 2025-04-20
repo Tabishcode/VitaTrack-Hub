@@ -9,6 +9,7 @@ import NavbarMain from "./components/NavbarMain.jsx";
 import Home from "./pages/Home.jsx";
 import Login from "./components/Login.jsx";
 import FoodDashboard from "./pages/FoodDashboard.jsx";
+import FoodTimeTable from "./pages/FoodTimeTable.jsx";
 import FitnessDashboard from "./pages/FitnessDashboard.jsx";
 import Welcome from "./components/WelcomeFoodFitness.jsx";
 import FoodForm from "./components/CaloriesRequirmentForm.jsx";
@@ -70,48 +71,67 @@ const App = () => {
 
 
     return (
-        <Router>
-            <NavbarMain isLoggedIn={isLoggedIn} user={user} revalidate={revalidate} />
-            <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/login" element={<Login onLogin={revalidate} />} />
-                <Route path="/signup" element={<SignUp onSignUp={revalidate} />} />
-                <Route
-                    path="/welcome"
-                    element={
-                        isLoggedIn ? (
-                            isFormFilled ? (
-                                <Navigate to="/FoodDashboard" />
-                            ) : (
-                                <Welcome />
-                            )
-                        ) : (
-                            <NotFound />
-                        )
-                    }
-                />
-                <Route
-                    path="/FoodForm"
-                    element={
-                        isLoggedIn ? (
-                            isFormFilled ? (
-                                <Navigate to="/FoodDashboard" />
-                            ) : (
-                                <FoodForm />
-                            )
-                        ) : (
-                            <NotFound />
-                        )
-                    }
-                />
-                <Route path="/FoodDashBoard" element={isLoggedIn ? <FoodDashboard /> : <NotFound />} />
-                <Route path="/fitness" element={isLoggedIn ? <FitnessDashboard /> : <NotFound />} />
-                <Route path="/reports" element={isLoggedIn ? <Reports /> : <NotFound />} />
-                <Route path="/blogs" element={isLoggedIn ? <Blogs /> : <NotFound /> } />
-
-            </Routes>
-            <Footer />
-        </Router>
+      <Router>
+        <NavbarMain
+          isLoggedIn={isLoggedIn}
+          user={user}
+          revalidate={revalidate}
+        />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<Login onLogin={revalidate} />} />
+          <Route path="/signup" element={<SignUp onSignUp={revalidate} />} />
+          <Route
+            path="/welcome"
+            element={
+              isLoggedIn ? (
+                isFormFilled ? (
+                  <Navigate to="/FoodDashboard" />
+                ) : (
+                  <Welcome />
+                )
+              ) : (
+                <NotFound />
+              )
+            }
+          />
+          <Route
+            path="/FoodForm"
+            element={
+              isLoggedIn ? (
+                isFormFilled ? (
+                  <Navigate to="/FoodDashboard" />
+                ) : (
+                  <FoodForm />
+                )
+              ) : (
+                <NotFound />
+              )
+            }
+          />
+          <Route
+            path="/FoodDashBoard"
+            element={isLoggedIn ? <FoodDashboard /> : <NotFound />}
+          />
+          <Route
+            path="/FoodTimeTable"
+            element={isLoggedIn ? <FoodTimeTable /> : <NotFound />}
+          />
+          <Route
+            path="/fitness"
+            element={isLoggedIn ? <FitnessDashboard /> : <NotFound />}
+          />
+          <Route
+            path="/reports"
+            element={isLoggedIn ? <Reports /> : <NotFound />}
+          />
+          <Route
+            path="/blogs"
+            element={isLoggedIn ? <Blogs /> : <NotFound />}
+          />
+        </Routes>
+        <Footer />
+      </Router>
     );
 };
 

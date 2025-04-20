@@ -32,25 +32,96 @@ router.post("/updateDay", async (req, res) => {
     let timetable = await FoodTimetable.findOne({ userId });
 
     if (!timetable) {
-      timetable = new FoodTimetable({ userId, week: { [day]: data } });
+      // Initialize the full week with empty meals for all days
+      timetable = new FoodTimetable({
+        userId,
+        week: {
+          monday: {},
+          tuesday: {},
+          wednesday: {},
+          thursday: {},
+          friday: {},
+          saturday: {},
+          sunday: {},
+          [day]: data, // Set initial data for provided day
+        },
+      });
     } else {
-      timetable.week[day] = data;
+      const existingDayData = timetable.week[day] || {};
+
+      // Merge new data into existing day data
+      for (const key in data) {
+        if (Array.isArray(data[key])) {
+          // For meals like breakfast, lunch, etc.
+          existingDayData[key] = [
+            ...(existingDayData[key] || []),
+            ...data[key],
+          ];
+        } else {
+          // For scalar fields like waterIntake
+          existingDayData[key] = data[key];
+        }
+      }
+
+
+      timetable.week[day] = existingDayData;
     }
 
     await timetable.save();
+
     res.json({
       success: true,
       message: `${day} updated successfully`,
       week: timetable.week,
     });
   } catch (err) {
-    res
-      .status(500)
-      .json({
-        success: false,
-        message: "Failed to update day",
-        error: err.message,
-      });
+    res.status(500).json({
+      success: false,
+      message: "Failed to update day",
+      error: err.message,
+    });
+  }
+});
+
+
+// ✅ Remove food entry by name, day and mealType
+router.delete("/removeFood", async (req, res) => {
+  if (!req.isAuthenticated()) {
+    return res.status(401).json({ success: false, message: "Not authenticated" });
+  }
+
+  const { day, mealType, foodName } = req.body;
+  const userId = req.user._id;
+
+  if (!day || !mealType || !foodName) {
+    return res.status(400).json({ success: false, message: "Missing required fields" });
+  }
+
+  try {
+    const timetable = await FoodTimetable.findOne({ userId });
+
+    if (!timetable || !timetable.week[day]) {
+      return res.status(404).json({ success: false, message: "Day not found in timetable" });
+    }
+
+    const meals = timetable.week[day][mealType] || [];
+
+    // Filter out the food item by name
+    const filteredMeals = meals.filter(
+      (item) => item.name.toLowerCase() !== foodName.toLowerCase()
+    );
+
+    timetable.week[day][mealType] = filteredMeals;
+
+    await timetable.save();
+
+    res.json({ success: true, message: "Food item removed successfully" });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to remove food item",
+      error: err.message,
+    });
   }
 });
 

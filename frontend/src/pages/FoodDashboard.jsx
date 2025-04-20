@@ -1,119 +1,177 @@
-import  { useState } from "react";
-import FoodAttendance from "../components/FoodDashboard/FoodAttendence"; // Make sure to import the new component
-import { useNavigate } from "react-router-dom"; // Import useNavigate
+import { useState, useEffect } from "react";
+import FoodAttendance from "../components/FoodDashboard/FoodAttendence";
+import { useNavigate } from "react-router-dom";
+import { FaFireAlt, FaRunning, FaTint } from "react-icons/fa";
+import axios from "axios";
 
-const Dashboard = ({attendance=true}) => {
-  const navigate = useNavigate(); // Initialize the useNavigate hook
+const Dashboard = ({ attendance = true }) => {
+  const navigate = useNavigate();
 
-  // Static values to be changed by your conditions
-  const calorieGoal = 2000;
-  const initialCaloriesConsumed = 1200; // This will be updated based on attendance
-  const [caloriesConsumed, setCaloriesConsumed] = useState(
-    initialCaloriesConsumed
-  );
+  // States to store fetched data
+  const [calorieGoal, setCalorieGoal] = useState(0);
+  const [caloriesConsumed, setCaloriesConsumed] = useState(0);
+  const [waterIntake, setWaterIntake] = useState(0);
+  const [waterGoal, setWaterGoal] = useState(8); // Assuming a default water goal of 8 glasses
 
-  const fatsConsumed = 40; // in grams
-  const carbsConsumed = 150; // in grams
-  const sugarsConsumed = 50; // in grams
-  const waterIntake = 6; // in glasses
-  const exerciseCaloriesBurned = 300; // in calories
+  useEffect(() => {
+    // Fetch user profile to get calorie goal
+    const fetchUserProfile = async () => {
+      try {
+        const profileResponse = await axios.get(
+          "/api/user/profile"
+        );
+        const { calories, waterIntake: userWaterIntake } =
+          profileResponse.data.user;
+        setCalorieGoal(calories);
+        setWaterIntake(userWaterIntake);
+      } catch (error) {
+        console.error("Error fetching user profile:", error);
+      }
+    };
 
-  // Calculating remaining calories
+    // Fetch today's food attendance to calculate calories consumed
+    const fetchAttendance = async () => {
+      try {
+        const attendanceResponse = await axios.get(
+          "/api/attandance/today"
+        );
+        const meals = attendanceResponse.data.attendance.meals;
+        const totalCalories = meals.reduce((total, meal) => {
+          return (
+            total +
+            meal.foodItems.reduce(
+              (mealTotal, foodItem) => mealTotal + foodItem.calories,
+              0
+            )
+          );
+        }, 0);
+        setCaloriesConsumed(totalCalories);
+      } catch (error) {
+        console.error("Error fetching today's attendance:", error);
+      }
+    };
+
+    // Call both fetch functions
+    fetchUserProfile();
+    fetchAttendance();
+  }, []);
+
+  const exerciseCaloriesBurned = 300; // Example exercise calories burned (this can be dynamic too)
   const remainingCalories =
     calorieGoal - caloriesConsumed + exerciseCaloriesBurned;
+  const remainingWater = Math.max(waterGoal - waterIntake, 0);
 
-  const handleFoodTimetableClick = () => {
-    navigate("/FoodTimeTable"); // Redirect to /fooddiary when the button is clicked
+  const [selectedMeals, setSelectedMeals] = useState({}); // Food grouped by meal
+
+  const handleFoodTimetableClick = () => navigate("/FoodTimeTable");
+  const handleRetakeInput = () => navigate("/FoodForm");
+  const handleAdjustTimetable = () => navigate("/FoodTimeTable");
+
+  const handleWaterChange = (change) => {
+    setWaterIntake((prev) => Math.max(0, prev + change));
+  };
+
+  const handleSave = async () => {
+    const meals = Object.entries(selectedMeals).map(([time, foodItems]) => ({
+      time: time.toLowerCase(),
+      foodItems: foodItems.map(({ name, calories }) => ({ name, calories })),
+    }));
+
+    const payload = {
+      meals,
+      waterIntake: waterIntake,
+    };
+
+    try {
+      const response = await axios.post("/api/track", payload); // change URL as needed
+      alert("Record saved successfully!");
+    } catch (error) {
+      console.error(error);
+      alert("Failed to save record.");
+    }
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 p-8">
-      <div className="max-w-4xl mx-auto bg-white rounded-xl shadow-lg p-6">
-        {/* Today's Total Calorie Goal */}
-        <div className="text-center mb-8">
-          <h2 className="text-3xl font-bold text-gray-700">
-            Today's Total Calorie Goal
-          </h2>
-          <p className="text-4xl font-semibold text-blue-600 mt-2">
-            {calorieGoal} kcal
-          </p>
-        </div>
-
-        {/* Remaining Calories */}
-        <div className="bg-blue-100 rounded-lg p-6 text-center mb-8">
-          <h3 className="text-xl font-semibold text-blue-700">
-            Remaining Calories
-          </h3>
-          <p className="text-3xl font-bold text-blue-700 mt-2">
-            {remainingCalories} kcal
-          </p>
-        </div>
-
-        {/* Nutrient Breakdown */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          {/* Fats */}
-          <div className="bg-gray-100 rounded-lg p-4 text-center">
-            <h4 className="text-lg font-semibold text-gray-700">
-              Fats Consumed
-            </h4>
-            <p className="text-2xl font-bold text-gray-800">{fatsConsumed}g</p>
-            <p className="text-sm text-gray-500">Recommended: 70g</p>
-          </div>
-
-          {/* Carbs */}
-          <div className="bg-gray-100 rounded-lg p-4 text-center">
-            <h4 className="text-lg font-semibold text-gray-700">
-              Carbs Consumed
-            </h4>
-            <p className="text-2xl font-bold text-gray-800">{carbsConsumed}g</p>
-            <p className="text-sm text-gray-500">Recommended: 250g</p>
-          </div>
-
-          {/* Sugars */}
-          <div className="bg-gray-100 rounded-lg p-4 text-center">
-            <h4 className="text-lg font-semibold text-gray-700">
-              Sugars Consumed
-            </h4>
-            <p className="text-2xl font-bold text-gray-800">
-              {sugarsConsumed}g
-            </p>
-            <p className="text-sm text-gray-500">Recommended: 50g</p>
-          </div>
-
-          {/* Water Intake */}
-          <div className="bg-gray-100 rounded-lg p-4 text-center">
-            <h4 className="text-lg font-semibold text-gray-700">
-              Water Intake
-            </h4>
-            <p className="text-2xl font-bold text-gray-800">
-              {waterIntake} glasses
-            </p>
-            <p className="text-sm text-gray-500">Goal: 8 glasses</p>
-          </div>
-        </div>
-
-        {/* Exercise Calories Burned */}
-        <div className="bg-green-100 rounded-lg p-6 text-center mb-8">
-          <h3 className="text-xl font-semibold text-green-700">
-            Exercise Calories Burned
-          </h3>
-          <p className="text-3xl font-bold text-green-700 mt-2">
-            {exerciseCaloriesBurned} kcal
-          </p>
-        </div>
-
-        {/* My Food Timetable Button */}
-        <div className="text-center mb-8">
+    <div className="min-h-screen bg-gray-100 p-4">
+      <div className="max-w-7xl mx-auto bg-white rounded-lg shadow-md p-4">
+        {/* Header Section */}
+        <div className="flex flex-col sm:flex-row justify-between items-center gap-2 sm:gap-4 mb-4">
           <button
-            onClick={handleFoodTimetableClick} // Add onClick handler
-            className="bg-blue-600 text-white py-3 px-6 rounded-lg text-lg font-semibold hover:bg-blue-700 transition duration-300"
+            onClick={handleAdjustTimetable}
+            className="bg-purple-600 text-white px-8 py-4 rounded hover:bg-purple-700"
           >
-            My Food Timetable
+            Adjust Timetable
+          </button>
+
+          <div className="text-center flex-1">
+            <h2 className=" font-semibold text-gray-700">Track Your Meals</h2>
+            <p className=" text-gray-500">
+              Select meals to track your daily calorie intake
+            </p>
+          </div>
+
+          <button
+            onClick={handleRetakeInput}
+            className="bg-yellow-500 text-white px-8 py-4 rounded hover:bg-yellow-600"
+          >
+            Retake Input
           </button>
         </div>
 
-        {/* Food Attendance Section */}
-        {attendance && <FoodAttendance setCaloriesConsumed={setCaloriesConsumed} />}
+        {/* Food Selection */}
+        {attendance && (
+          <FoodAttendance
+            setCaloriesConsumed={setCaloriesConsumed}
+            setSelectedMeals={setSelectedMeals}
+          />
+        )}
+
+        {/* Calorie & Water Summary */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+          {/* Calorie Goal */}
+          <div className="bg-blue-100 rounded-2xl p-5 shadow-md">
+            <div className="flex items-center gap-2 mb-1">
+              <FaFireAlt className="text-blue-600 text-xl" />
+              <h2 className="text-sm font-semibold text-blue-800 uppercase">
+                Calorie Goal
+              </h2>
+            </div>
+            <p className="text-3xl font-extrabold text-blue-700">
+              {calorieGoal} kcal
+            </p>
+            <p className="text-xs text-blue-500 mt-1">Your daily target</p>
+          </div>
+
+          {/* Remaining Calories */}
+          <div className="bg-green-100 rounded-2xl p-5 shadow-md">
+            <div className="flex items-center gap-2 mb-1">
+              <FaRunning className="text-green-600 text-xl" />
+              <h2 className="text-sm font-semibold text-green-800 uppercase">
+                Remaining
+              </h2>
+            </div>
+            <p className="text-3xl font-extrabold text-green-700">
+              {remainingCalories} kcal
+            </p>
+            <p className="text-xs text-green-500 mt-1">Available after burn</p>
+          </div>
+
+          {/* Water Intake */}
+          <div className="bg-gradient-to-br from-cyan-100 to-blue-50 rounded-2xl p-5 shadow-sm hover:shadow-md transition duration-300">
+            <div className="flex items-center gap-2 mb-1">
+              <FaTint className="text-cyan-600 text-xl" />
+              <h2 className="text-sm font-semibold text-cyan-800 uppercase tracking-wide">
+                Water Intake
+              </h2>
+            </div>
+            <p className="text-3xl font-extrabold text-cyan-700">
+              {waterIntake} / {waterGoal} glasses
+            </p>
+            <p className="text-xs text-cyan-500 mt-1">
+              {remainingWater} glasses remaining
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   );

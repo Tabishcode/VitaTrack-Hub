@@ -7,14 +7,13 @@ require("dotenv").config();
 
 let User = require('./models/user.js');
 let Password = require('./models/password.js');
-let Food = require('./models/food.js');
 const articleRouter = require('./routes/articles.js');
 const userRouter = require('./routes/user.js');
 const exercisesRouter = require('./routes/exercises.js');
 const passwordsRouter = require('./routes/passwords.js');
-const expensesRouter = require('./routes/expenses.js');
+const foodTimetableRouter = require("./routes/foodTimetable.js");
+const foodAttandanceRouter = require("./routes/foodAttendance.js");
 
-const foodRoutes = require("./routes/foodTableRoutes.js");
 const MONGO_URL = process.env.MONGO_URL;
 const port = process.env.PORT || 5000;
 
@@ -68,8 +67,8 @@ app.use('/api/articles', articleRouter);
 app.use('/api/user', userRouter);
 app.use('/api/exercise', exercisesRouter);
 app.use('/api/password', passwordsRouter);
-app.use('/api/expenses', expensesRouter);
-
+app.use("/api/timetable", foodTimetableRouter);
+app.use("/api/attandance", foodAttandanceRouter);
 app.get("/app", (req, res) => {
   res.redirect("http://localhost:5173");
 });
@@ -78,7 +77,7 @@ app.get('*', (req, res) => {
   res.send("404 Page Not Found");
 });
 // Routes
-app.use('/api', foodRoutes);
+
 app.get("/passwords", async (req, res) => {
   let u = mongoose.model("user", new mongoose.Schema({}));
   let d = await u.find();

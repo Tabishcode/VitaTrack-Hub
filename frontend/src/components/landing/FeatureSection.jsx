@@ -1,6 +1,3 @@
-import fitnessImg from "../../../public/fitness.jpg";
-import foodImg from "../../../public/food.png";
-
 const FeaturesSection = () => {
   return (
     <div className="relative bg-[#F7F3F0] py-20">
@@ -33,7 +30,7 @@ const FeaturesSection = () => {
               Track Your Fitness
             </h3>
             <p className="text-gray-600 leading-relaxed">
-              Monitor your workouts, track your progress, and stay on top of your goals. Whether you're lifting, running, or doing yoga — we’ve got you covered.
+              Monitor your workouts, track your progress, and stay on top of your goals. Whether you are lifting, running, or doing yoga — we’ve got you covered.
             </p>
           </div>
 
@@ -48,7 +45,7 @@ const FeaturesSection = () => {
               Manage Your Food
             </h3>
             <p className="text-gray-600 leading-relaxed">
-              Plan your meals, track nutrition, and stick to your goals — whether you're going keto, vegan, or just aiming for balance.
+              Plan your meals, track nutrition, and stick to your goals — whether you are going keto, vegan, or just aiming for balance.
             </p>
           </div>
         </div>
