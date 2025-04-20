@@ -10,6 +10,14 @@ let passport = require('passport');
 // const {ObjectId} = require('mongoose');
 
 router.use(express.urlencoded({ extended: true }));
+// Middleware to check if user is authenticated and admin
+function isAdmin(req, res, next) {
+    if (req.isAuthenticated() && req.user.isAdmin) {
+        return next();
+    }
+    return res.status(403).json({ success: false, message: "Access denied. Admins only." });
+}
+
 
 router.get("/stats", (req, res) => {
     const { id } = req.query;
@@ -138,10 +146,54 @@ router.get('/exercise', async (req, res) => {
 
 // Check if the user is authenticated
 router.get("/isAuthenticated", (req, res) => {
-    if (req.isAuthenticated()) {
-        return res.json({ loggedIn: true, user: req.user }); // send user data if logged in
-    }
-    return res.json({ loggedIn: false }); // user not logged in
+  if (req.isAuthenticated()) {
+    return res.json({
+      loggedIn: true,
+      user: {
+        ...req.user.toObject(),
+        isAdmin: req.user.isAdmin,
+      },
+    });
+  }
+  return res.json({ loggedIn: false });
+});
+
+
+// TEMP ROUTE: Set isAdmin: true for a user by email
+// router.get('/make-admin', async (req, res) => {
+//     try {
+//         const { email } = req.query;
+//         if (!email) {
+//             return res.status(400).json({ success: false, message: "Email is required in query ?email=" });
+//         }
+
+//         const user = await User.findOneAndUpdate(
+//             { email },
+//             { isAdmin: true },
+//             { new: true }
+//         );
+
+//         if (!user) {
+//             return res.status(404).json({ success: false, message: "User not found" });
+//         }
+
+//         return res.json({ success: true, message: "User promoted to admin", user });
+//     } catch (err) {
+//         console.error("Error promoting user to admin:", err.message);
+//         return res.status(500).json({ success: false, message: "Server error" });
+//     }
+// });
+
+
+// GET all user profiles (admin view)
+router.get('/admin/all-users', isAdmin, async (req, res) => {
+  try {
+    const users = await User.find({}).select('-hash -salt'); // Exclude sensitive fields
+    return res.json({ success: true, users });
+  } catch (err) {
+    console.error("Error fetching users:", err.message);
+    return res.status(500).json({ success: false, message: "Failed to fetch users" });
+  }
 });
 
 
@@ -277,6 +329,18 @@ router.get("/profile", async (req, res) => {
     return res
       .status(500)
       .json({ success: false, message: "Error fetching user details" });
+  }
+});
+
+// GET all user profiles (admin view)
+router.get('/admin/all-users', async (req, res) => {
+  // Optional: protect this with authentication/authorization middleware
+  try {
+    const users = await User.find({}).select('-hash -salt'); // Exclude sensitive fields
+    return res.json({ success: true, users });
+  } catch (err) {
+    console.error("Error fetching users:", err.message);
+    return res.status(500).json({ success: false, message: "Failed to fetch users" });
   }
 });
 

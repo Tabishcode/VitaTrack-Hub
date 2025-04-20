@@ -22,6 +22,8 @@ import useAuth from "./hooks/useAuth.jsx";
 import "./style.css";
 import "./index.css";
 import PuffLoader from "react-spinners/PuffLoader";
+import AdminDashboard from "./pages/AdminDashboard.jsx";
+import AdminNavbar from "./components/AdminNavbar.jsx";
 
 const App = () => {
   const { isLoggedIn, user, revalidate } = useAuth();
@@ -72,15 +74,24 @@ const App = () => {
 
     return (
       <Router>
-        <NavbarMain
-          isLoggedIn={isLoggedIn}
-          user={user}
-          revalidate={revalidate}
-        />
+        {isLoggedIn && user?.isAdmin ? (
+          <AdminNavbar user={user} revalidate={revalidate} />
+        ) : (
+          <NavbarMain
+            isLoggedIn={isLoggedIn}
+            user={user}
+            revalidate={revalidate}
+          />
+        )}
+
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login onLogin={revalidate} />} />
           <Route path="/signup" element={<SignUp onSignUp={revalidate} />} />
+          <Route
+            path="/admin"
+            element={isLoggedIn ? <AdminDashboard /> : <NotFound />}
+          />
           <Route
             path="/welcome"
             element={

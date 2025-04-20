@@ -273,7 +273,7 @@ const FoodTimeTable = () => {
                       waterIntake: foodData[selectedDay].waterIntake,
                     },
                   };
-                  const res = await axios.post(
+                   await axios.post(
                     "/api/timetable/updateDay",
                     payload
                   );
