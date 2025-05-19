@@ -1,72 +1,112 @@
-const FeaturesSection = () => {
+import { motion } from "framer-motion";
+import {
+  FaAppleAlt,
+  FaRunning,
+  FaChartLine,
+  FaMobileAlt,
+  FaUtensils,
+  FaMedal,
+} from "react-icons/fa";
+
+const KeyFeatures = () => {
+  const features = [
+    {
+      icon: <FaAppleAlt className="text-teal-500 text-2xl" />,
+      title: "Nutrition Tracking",
+      description:
+        "Log meals with our extensive food database and get detailed nutrition breakdowns",
+    },
+    {
+      icon: <FaRunning className="text-blue-500 text-2xl" />,
+      title: "Workout Plans",
+      description:
+        "Customized exercise routines for all fitness levels with progress tracking",
+    },
+    {
+      icon: <FaChartLine className="text-purple-500 text-2xl" />,
+      title: "Progress Analytics",
+      description:
+        "Visualize your journey with detailed charts and milestone tracking",
+    },
+    {
+      icon: <FaUtensils className="text-orange-500 text-2xl" />,
+      title: "Smart Recipes",
+      description:
+        "Discover healthy recipes tailored to your dietary preferences",
+    },
+    {
+      icon: <FaMobileAlt className="text-green-500 text-2xl" />,
+      title: "Mobile Friendly",
+      description:
+        "Full functionality on all devices - track anywhere, anytime",
+    },
+    {
+      icon: <FaMedal className="text-yellow-500 text-2xl" />,
+      title: "Achievements",
+      description: "Earn badges and rewards for hitting your health goals",
+    },
+  ];
+
   return (
-    <div className="relative bg-[#F7F3F0] py-20">
-      {/* Top curved SVG */}
-      <svg
-        className="absolute top-0 left-0 w-full h-20"
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 1440 320"
-      >
-        <path
-          fill="#f3f4f6"
-          d="M0,96L1440,224L1440,0L0,0Z"
-        ></path>
-      </svg>
+    <section className="py-12 px-4 sm:px-6 lg:px-8 bg-white">
+      <div className="max-w-7xl mx-auto">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          viewport={{ once: true }}
+          className="text-center mb-3"
+        >
+          <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
+            Everything You Need for{" "}
+            <span className="text-teal-600">Health Success</span>
+          </h2>
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            Our comprehensive platform combines all the tools you need to
+            transform your health and fitness
+          </p>
+        </motion.div>
 
-      <div className="relative z-10 max-w-6xl mx-auto text-center px-4">
-        <h2 className="text-4xl font-bold mb-16 text-gray-800">
-          What It Takes to Succeed
-        </h2>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-          {/* Feature Card 1 */}
-          <div className="bg-white rounded-2xl shadow-lg p-6 transition-transform duration-300 hover:-translate-y-2 hover:shadow-xl">
-            <img
-              src="/fitness.jpg"
-              alt="Track Fitness"
-              className="w-full h-64 object-cover rounded-xl mb-6"
-            />
-            <h3 className="text-2xl font-semibold mb-3 text-gray-800">
-              Track Your Fitness
-            </h3>
-            <p className="text-gray-600 leading-relaxed">
-              Monitor your workouts, track your progress, and stay on top of your goals. Whether you are lifting, running, or doing yoga — we’ve got you covered.
-            </p>
-          </div>
-
-          {/* Feature Card 2 */}
-          <div className="bg-white rounded-2xl shadow-lg p-6 transition-transform duration-300 hover:-translate-y-2 hover:shadow-xl">
-            <img
-              src="/food.png"
-              alt="Manage Food"
-              className="w-full h-64 object-cover rounded-xl mb-6"
-            />
-            <h3 className="text-2xl font-semibold mb-3 text-gray-800">
-              Manage Your Food
-            </h3>
-            <p className="text-gray-600 leading-relaxed">
-              Plan your meals, track nutrition, and stick to your goals — whether you are going keto, vegan, or just aiming for balance.
-            </p>
-          </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {features.map((feature, index) => (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: index * 0.1 }}
+              viewport={{ once: true }}
+              className="bg-gray-50 rounded-xl p-6 hover:bg-white hover:shadow-lg transition-all duration-300 border border-gray-100"
+              whileHover={{ y: -5 }}
+            >
+              <div className="flex items-start">
+                <div className="bg-white p-3 rounded-lg shadow-sm mr-4">
+                  {feature.icon}
+                </div>
+                <div>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                    {feature.title}
+                  </h3>
+                  <p className="text-gray-600">{feature.description}</p>
+                </div>
+              </div>
+            </motion.div>
+          ))}
         </div>
-      </div>
 
-      {/* Bottom curved SVG */}
-      <svg
-        className="absolute bottom-0 left-0 w-full h-20"
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 1440 320"
-      >
-        <path
-          fill="#f3f4f6"
-          d="M0,224L1440,96L1440,320L0,320Z"
-        ></path>
-      </svg>
-    </div>
+        <motion.div
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          transition={{ delay: 0.4, duration: 0.6 }}
+          viewport={{ once: true }}
+          className="text-center mt-2"
+        >
+          <button className="bg-gradient-to-r from-teal-500 to-blue-600 text-white py-3 px-8 rounded-full font-semibold hover:from-teal-600 hover:to-blue-700 transition-all duration-300 shadow-md">
+            Explore All Features
+          </button>
+        </motion.div>
+      </div>
+    </section>
   );
 };
 
-export default FeaturesSection;
-
-
-
+export default KeyFeatures;
