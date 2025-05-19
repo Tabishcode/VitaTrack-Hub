@@ -1,16 +1,18 @@
 import React, { useState } from "react";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
+import { FcGoogle } from "react-icons/fc";
 import { useNavigate } from "react-router-dom";
+import { BeatLoader } from "react-spinners";
 
 const Login = ({ onLogin }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
-    // captcha: false,
-    remember: false
+    remember: false,
   });
   const [errors, setErrors] = useState({});
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
   const togglePasswordVisibility = () => {
@@ -23,214 +25,220 @@ const Login = ({ onLogin }) => {
       ...formData,
       [id]: type === "checkbox" ? checked : value,
     });
-    setErrors({ ...errors, [id]: "" }); // Clear error for the field
+    // Clear error when user starts typing
+    if (errors[id]) {
+      setErrors({ ...errors, [id]: "" });
+    }
   };
 
   const validateForm = () => {
     const newErrors = {};
 
-    // Email validation
-    // if (!formData.email) {
-    //   newErrors.email = "Email is required.";
-    // } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-    //   newErrors.email = "Please enter a valid email.";
-    // }
-    if (!formData.email) {
-      newErrors.email = "Username is Required.";
+    if (!formData.email.trim()) {
+      newErrors.email = "Username is required";
     }
 
-    // Password validation
     if (!formData.password) {
-      newErrors.password = "Password is required.";
-    } else if (formData.password.length < 5) {
-      newErrors.password = "Password must be at least 5 characters long.";
+      newErrors.password = "Password is required";
+    } else if (formData.password.length < 6) {
+      newErrors.password = "Password must be at least 6 characters";
     }
-
-    // Captcha validation
-    // if (!formData.captcha) {
-    //   newErrors.captcha = "Please confirm you are not a robot.";
-    // }
 
     setErrors(newErrors);
-    return Object.keys(newErrors).length === 0; // Form is valid if no errors
+    return Object.keys(newErrors).length === 0;
   };
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    if (validateForm()) {
-      try {
-        // Make the login API call
-        const loginResponse = await fetch('/api/user/login', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            username: formData.email,
-            password: formData.password,
-          }),
+    if (!validateForm()) return;
+
+    setIsLoading(true);
+    setErrors({});
+
+    try {
+      const response = await fetch("/api/user/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          username: formData.email,
+          password: formData.password,
+        }),
+        credentials: "include",
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        onLogin();
+        const detailsResponse = await fetch("/api/user/checkDetails");
+        const detailsData = await detailsResponse.json();
+        navigate(detailsData.details ? "/FoodDashboard" : "/welcome");
+      } else {
+        setErrors({
+          login: data.message || "Invalid credentials. Please try again.",
         });
-  
-        const loginData = await loginResponse.json();
-  
-        if (loginData.success) {
-          // Login successful
-          onLogin();
-  
-          // Check user details
-          const detailsResponse = await fetch("/api/user/checkDetails");
-          const detailsData = await detailsResponse.json();
-  
-          if (detailsData.details) {
-            navigate("/FoodDashboard"); // Redirect to FoodDashboard
-          } else {
-            navigate("/welcome"); // Redirect to welcome
-          }
-        } else {
-          // Login failed
-          console.error('Login failed');
-          setErrors({ ...errors, login: "There was an error logging you in! Please Try Again" });
-        }
-      } catch (error) {
-        console.error('Error:', error);
-        setErrors({ ...errors, login: "An unexpected error occurred. Please try again later." });
       }
+    } catch (error) {
+      setErrors({
+        login: "Network error. Please try again later.",
+      });
+      console.error("Login error:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
-  
 
   return (
-    <div className="flex items-center justify-center bg-gray-100">
-      <div className="bg-white rounded-xl shadow-lg p-12 w-5/12 m-5">
-        <h1 className="text-2xl font-bold text-center mb-3">Login</h1>
-        <p className="text-center">Username: admin Pass: admin</p>
-        <form onSubmit={handleLogin}>
-          <div className="mb-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-gray-100 p-4">
+      <div className="bg-white rounded-xl shadow-lg p-8 w-full max-w-md">
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-bold text-gray-800 mb-2">
+            Welcome Back
+          </h1>
+          <p className="text-gray-600">Sign in to access your account</p>
+        </div>
+
+        <form onSubmit={handleLogin} className="space-y-6">
+          {/* Username Field */}
+          <div>
             <label
               htmlFor="email"
-              className="block text-sm font-medium text-gray-700"
+              className="block text-sm font-medium text-gray-700 mb-1"
             >
               Username
             </label>
-            <input
-              type="text"
-              id="email"
-              value={formData.email}
-              onChange={handleChange}
-              className={`mt-1 block w-full border ${errors.email ? "border-red-500" : "border-gray-300"
-                } rounded-md shadow-sm focus:ring focus:ring-blue-500 focus:border-blue-500 p-2`}
-              required
-            />
+            <div className="relative">
+              <input
+                type="text"
+                id="email"
+                value={formData.email}
+                onChange={handleChange}
+                className={`w-full px-4 py-3 rounded-lg border ${
+                  errors.email ? "border-red-500" : "border-gray-300"
+                } 
+                  focus:ring-2 focus:ring-blue-500 focus:border-transparent transition`}
+                placeholder="Enter your username"
+                autoComplete="username"
+              />
+            </div>
             {errors.email && (
-              <p className="text-red-500 text-sm mt-1">{errors.email}</p>
+              <p className="mt-1 text-sm text-red-600">{errors.email}</p>
             )}
           </div>
-          <div className="mb-4 relative">
+
+          {/* Password Field */}
+          <div>
             <label
               htmlFor="password"
-              className="block text-sm font-medium text-gray-700"
+              className="block text-sm font-medium text-gray-700 mb-1"
             >
               Password
             </label>
-            <input
-              type={showPassword ? "text" : "password"}
-              id="password"
-              value={formData.password}
-              onChange={handleChange}
-              className={`mt-1 block w-full border ${errors.password ? "border-red-500" : "border-gray-300"
-                } rounded-md shadow-sm focus:ring focus:ring-blue-500 focus:border-blue-500 p-2`}
-              required
-            />
-            <button
-              type="button"
-              onClick={togglePasswordVisibility}
-              className="absolute inset-y-0 right-0 top-6 flex items-center pr-3"
-            >
-              {showPassword ? (
-                <AiOutlineEyeInvisible
-                  className="h-5 w-5 text-gray-500"
-                  aria-hidden="true"
-                />
-              ) : (
-                <AiOutlineEye
-                  className="h-5 w-5 text-gray-500"
-                  aria-hidden="true"
-                />
-              )}
-            </button>
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                id="password"
+                value={formData.password}
+                onChange={handleChange}
+                className={`w-full px-4 py-3 rounded-lg border ${
+                  errors.password ? "border-red-500" : "border-gray-300"
+                } 
+                  focus:ring-2 focus:ring-blue-500 focus:border-transparent transition`}
+                placeholder="Enter your password"
+                autoComplete="current-password"
+              />
+              <button
+                type="button"
+                onClick={togglePasswordVisibility}
+                className="absolute right-3 top-3.5 text-gray-500 hover:text-gray-700"
+                aria-label={showPassword ? "Hide password" : "Show password"}
+              >
+                {showPassword ? (
+                  <AiOutlineEyeInvisible className="h-5 w-5" />
+                ) : (
+                  <AiOutlineEye className="h-5 w-5" />
+                )}
+              </button>
+            </div>
             {errors.password && (
-              <p className="text-red-500 text-sm mt-1">{errors.password}</p>
+              <p className="mt-1 text-sm text-red-600">{errors.password}</p>
             )}
           </div>
-          <div className="flex items-center justify-between mb-4">
+
+          {/* Remember Me & Forgot Password */}
+          <div className="flex items-center justify-between">
             <div className="flex items-center">
               <input
                 type="checkbox"
                 id="remember"
-                className="mr-2 shadow-xl"
+                checked={formData.remember}
                 onChange={handleChange}
-                checked={formData.captcha} />
-              <label htmlFor="remember" className="text-sm text-gray-600">
-                Remember Me
+                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+              />
+              <label
+                htmlFor="remember"
+                className="ml-2 block text-sm text-gray-700"
+              >
+                Remember me
               </label>
             </div>
             <button
-              onClick={() => { alert("The Feature is currently under Development!") }}
-              className="text-sm text-blue-500 hover:underline"
+              type="button"
+              onClick={() => navigate("/forgot-password")}
+              className="text-sm text-blue-600 hover:text-blue-800 hover:underline"
             >
-              Forgot Password?
+              Forgot password?
             </button>
           </div>
-          {/* <div className="flex items-center mb-4">
-            <input
-              type="checkbox"
-              id="captcha"
-              checked={formData.captchaChecked}
-              onChange={handleChange}
-              className="mr-2 shadow-2xl"
-            />
-            <label htmlFor="captcha" className="text-sm text-gray-600">
-              I am not a robot
-            </label>
-          </div> */}
-          {errors.captchaChecked && (
-            <p className="text-red-500 text-sm mt-1">{errors.captchaChecked}</p>
-          )}
-          {errors.login && (
-            <p className="text-red-500 text-base font-bold text-center mb-3 mt-1">{errors.login}</p>
-          )}
+
+          {/* Login Button */}
           <button
             type="submit"
-            className="w-full bg-yellow-500 text-white font-semibold py-2 rounded-md hover:bg-yellow-700 transition duration-200"
+            disabled={isLoading}
+            className={`w-full py-3 px-4 rounded-lg font-medium text-white ${
+              isLoading ? "bg-blue-400" : "bg-blue-600 hover:bg-blue-700"
+            } 
+              focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors`}
           >
-            Login
+            {isLoading ? <BeatLoader color="#ffffff" size={8} /> : "Sign In"}
           </button>
+
+          {/* Error Message */}
+          {errors.login && (
+            <div className="p-3 bg-red-50 rounded-lg text-red-600 text-sm">
+              {errors.login}
+            </div>
+          )}
         </form>
-        <div className="flex items-center my-4">
-          <hr className="flex-grow border-gray-300" />
-          <span className="mx-2 text-gray-600">OR</span>
-          <hr className="flex-grow border-gray-300" />
+
+        {/* Divider */}
+        <div className="my-6 flex items-center">
+          <div className="flex-grow border-t border-gray-300"></div>
+          <span className="mx-4 text-gray-500 text-sm">OR</span>
+          <div className="flex-grow border-t border-gray-300"></div>
         </div>
+
+        {/* Social Login */}
         <button
-          className="w-full shadow-lg border flex text-center justify-center items-center font-semibold py-2 rounded-md hover:bg-slate-300 transition duration-200"
-          onClick={() => {
-            alert("The Feature is currently under development!");
-          }}
+          onClick={() => alert("Google login coming soon!")}
+          className="w-full flex items-center justify-center gap-3 py-2.5 px-4 border border-gray-300 rounded-lg 
+            font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 
+            focus:ring-blue-500 transition-colors"
         >
-          <img
-            src="https://mailmeteor.com/logos/assets/PNG/Gmail_Logo_256px.png"
-            alt=""
-            className="size-3 mr-4"
-          />
+          <FcGoogle className="h-5 w-5" />
           Continue with Google
         </button>
-        <p className="mt-4 text-center text-sm text-gray-600">
-          Don't have an account?
-          <a href="/signup" className="text-blue-500 hover:underline">
-            {" "}
-            Sign Up
-          </a>
-        </p>
+
+        {/* Sign Up Link */}
+        <div className="mt-6 text-center text-sm text-gray-600">
+          Don't have an account?{" "}
+          <button
+            onClick={() => navigate("/signup")}
+            className="font-medium text-blue-600 hover:text-blue-800 hover:underline"
+          >
+            Sign up
+          </button>
+        </div>
       </div>
     </div>
   );

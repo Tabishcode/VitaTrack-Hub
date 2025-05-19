@@ -83,11 +83,15 @@ const NavbarMain = ({ isLoggedIn, user, revalidate }) => {
             className="flex items-center cursor-pointer hover:opacity-90 transition-opacity"
             onClick={() => navigate("/")}
           >
-            <div className="flex items-center w-28 h-12">
-              <div className="bg-blue-500 rounded-full p-2 mr-2">
-                <FiChevronUp className="text-white text-lg" />
+            <div className="flex items-center w-[85%] h-20">
+              <div className="  w-[100%] h-[100%]  mr-2">
+                <img
+                  src="/logo_c.png"
+                  alt="Logo"
+                  className="w-full h-full object-contain"
+                />
               </div>
-              <h3 className="font-semibold text-lg">VitalHub</h3>
+              <h3 className="font-semibold text-lg">VitaTrack</h3>
             </div>
           </div>
 
