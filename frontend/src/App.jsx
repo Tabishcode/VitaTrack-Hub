@@ -7,7 +7,7 @@ import {
 } from "react-router-dom";
 import NavbarMain from "./components/NavbarMain.jsx";
 import Home from "./pages/Home.jsx";
-import Login from "./components/Login.jsx";
+import Login from "./components/LoginPage.jsx";
 import FoodDashboard from "./pages/FoodDashboard.jsx";
 import FoodTimeTable from "./pages/FoodTimeTable.jsx";
 import FitnessDashboard from "./pages/FitnessDashboard.jsx";
@@ -24,7 +24,6 @@ import "./index.css";
 import PuffLoader from "react-spinners/PuffLoader";
 import AdminDashboard from "./pages/AdminDashboard.jsx";
 import AdminNavbar from "./components/AdminNavbar.jsx";
-
 const App = () => {
   const { isLoggedIn, user, revalidate } = useAuth();
   const [isFormFilled, setIsFormFilled] = useState(false); // Manage loading state for form status
